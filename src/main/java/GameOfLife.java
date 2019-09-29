@@ -11,7 +11,7 @@ public class GameOfLife {
     private static int y;
     private static int iterations;
 
-    void start() {
+    static void start() {
         String[][] resultCells = doIteration(readFromFile());
         for (int i = 1; i < iterations; i++) {
             String[][] initialCells = resultCells;
@@ -21,7 +21,12 @@ public class GameOfLife {
             //the difference by which we need to move alive cell
             int deltaK = 0;
             int deltaL = 0;
-            String[][] temp = new String[x][y];
+            String[][] tempArray;
+            if(checkFieldSize(x, y, initialCells)){
+                tempArray = new String[x][y];
+            }else {
+                tempArray = new String[initialCells.length][initialCells[0].length];
+            }
             int length = getLength(lastX, lastY);
             for (int j = 0; j < length; j++) {
                 if (initialCells[lastX][j].equals("O") || initialCells[j][lastY].equals("O")) {
@@ -38,19 +43,18 @@ public class GameOfLife {
                             break;
                         }
                     }
-
                     //moving all alive cells
                     for (int k = 0; k < initialCells.length; k++) {
                         for (int l = 0; l < initialCells[k].length; l++) {
                             if (initialCells[k][l].equals("O")) {
-                                temp[k - deltaK][l - deltaL] = initialCells[k][l];
-                                temp[k][l] = "X";
+                                tempArray[k - deltaK][l - deltaL] = initialCells[k][l];
+                                tempArray[k][l] = "X";
                             } else {
-                                temp[k][l] = initialCells[k][l];
+                                tempArray[k][l] = initialCells[k][l];
                             }
                         }
                     }
-                    initialCells = temp;
+                    initialCells = tempArray;
                 }
             }
             resultCells = doIteration(initialCells);
@@ -82,8 +86,8 @@ public class GameOfLife {
         return arrayFromFile;
     }
 
-    public int getLength(int lastX, int lastY) {
-        return (lastX < lastY) ? lastX : lastY;
+    public static int getLength(int x, int y) {
+        return x < y ? x : y;
     }
 
     //is the cell inside the field
@@ -130,7 +134,6 @@ public class GameOfLife {
                 System.arraycopy(initCells[i], 0, resultArray[i], 0, initCells[0].length);
             }
         }
-
         //main process of the "Game of Life"
         for (int i = 0; i < initCells.length; i++) {
             for (int j = 0; j < initCells[i].length; j++) {
